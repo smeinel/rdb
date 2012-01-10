@@ -22,20 +22,23 @@ var argv = optimist.options('port', {
 	}).alias('script', 's').argv,
 	host_ip, hosts;
 	
+if (argv.help) {
+	console.error("Usage: node rdb.js [-p|--port port_number] [-a|--adapter adapter_interface] [-s|--script]\n".yellow);
+	console.error("Options:".yellow);
+	console.error("\t-p, --port\t\tSelect which port to listen on (Default 8080).".yellow);
+	console.error("\t-a, --adapter\t\tSelect which network adapter to listen on (Default lo (lo0 on OS X)).".yellow);
+	console.error("\t-s, --script\t\tPrints a code snippet to paste into remote apps to feed messages to rdb.".yellow);
+	process.exit(0);
+}
+
+//	Get the host IP from the selected interface
 hosts = os.networkInterfaces();
+//	OS X defaults to lo0 for the loopback interface rather than lo
 if (argv.adapter === "lo" && os.platform() === "darwin") {
 	argv.adapter = "lo0";
 }
 if (hosts[argv.adapter]) {
-	console.error("Using adapter " + (argv.adapter + "").green);
 	hosts[argv.adapter].forEach(function (element) {
-		if (element.family === "IPv4") {
-			host_ip = element.address;
-		}
-	});
-} else if (hosts.lo) {
-	console.error("Using adapter " + "lo".green);
-	hosts.lo.forEach(function (element) {
 		if (element.family === "IPv4") {
 			host_ip = element.address;
 		}
@@ -45,16 +48,10 @@ if (hosts[argv.adapter]) {
 	console.error(hosts);
 	process.exit(1);
 }
-	
-if (argv.help) {
-	console.error("Usage: node ./rdb.js [-p|--port port_number] [-a|--adapter adapter_interface] [-s|--script]\n".yellow);
-	console.error("Options:".yellow);
-	console.error("\t-p, --port\t\tSelect which port to listen on (Default 8080).".yellow);
-	console.error("\t-a, --adapter\t\tSelect which network adapter to listen on (Default lo (lo0 on OS X)).".yellow);
-	console.error("\t-s, --script\t\tPrints a code snippet to paste into remote apps to feed messages to rdb.".yellow);
-	process.exit(0);
-} else if (argv.script) {
-	console.error("Script snippet:\n===== >8 CUT 8< =====\n".green +"//	Override console.log for remote debugging with rdb.js\n\
+
+//	Output the script?
+if (argv.script) {
+	console.error("Script snippet:\n===== >8 CUT 8< =====\n".green + ("//	Override console.log for remote debugging with rdb.js\n\
 console.log = function (data) {\n\
   var message = {};\n\
   if (typeof(data) === 'object') {\n\
@@ -63,9 +60,9 @@ console.log = function (data) {\n\
     message.text = data;\n\
   }\n\
   $.post('http://" + host_ip + ":" + argv.port + "/log', message);\n\
-};\n".white + "===== >8 CUT 8< =====\n".green);
+};\n").white.bold + "===== >8 CUT 8< =====\n".green);
 }
-
+	
 http.createServer(function (req, res) {
 	var url_parts = url.parse(req.url, true);
 	
