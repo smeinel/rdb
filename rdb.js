@@ -23,6 +23,9 @@ var argv = optimist.options('port', {
 	host_ip, hosts;
 	
 hosts = os.networkInterfaces();
+if (argv.adapter === "lo" && os.platform() === "darwin") {
+	argv.adapter = "lo0";
+}
 if (hosts[argv.adapter]) {
 	console.error("Using adapter " + (argv.adapter + "").green);
 	hosts[argv.adapter].forEach(function (element) {
@@ -37,13 +40,17 @@ if (hosts[argv.adapter]) {
 			host_ip = element.address;
 		}
 	});
+} else {
+	console.error(("Adapter " + argv.adapter + " not found. Available adapters:").red);
+	console.error(hosts);
+	process.exit(1);
 }
 	
 if (argv.help) {
 	console.error("Usage: node ./rdb.js [-p|--port port_number] [-a|--adapter adapter_interface] [-s|--script]\n".yellow);
 	console.error("Options:".yellow);
 	console.error("\t-p, --port\t\tSelect which port to listen on (Default 8080).".yellow);
-	console.error("\t-a, --adapter\t\tSelect which network adapter to listen on (Default lo).".yellow);
+	console.error("\t-a, --adapter\t\tSelect which network adapter to listen on (Default lo (lo0 on OS X)).".yellow);
 	console.error("\t-s, --script\t\tPrints a code snippet to paste into remote apps to feed messages to rdb.".yellow);
 	process.exit(0);
 } else if (argv.script) {
