@@ -55,7 +55,7 @@ if (argv.script) {
 console.log = function (data) {\n\
   var message = {};\n\
   if (typeof(data) === 'object') {\n\
-    message = data;\n\
+    message.data = JSON.stringify(data);\n\
   } else {\n\
     message.text = data;\n\
   }\n\
@@ -81,9 +81,16 @@ http.createServer(function (req, res) {
 		});
 		req.on('end', function () {
 			var fixedData = querystring.parse(data.join(""));
-			console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + util.inspect(fixedData).message);
+			if (fixedData['data']) {
+				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + JSON.stringify(JSON.parse(fixedData['data']), null, "  ").message);
+			} else {
+				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + fixedData.text.message);
+			}
 		});
-		res.writeHead(200);
+		res.writeHead(200, {
+			'Access-Control-Allow-Origin': '*',
+	    	'Access-Control-Allow-Headers': 'X-Requested-With'
+		});
 		res.end();
 	}
 	
