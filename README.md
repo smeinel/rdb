@@ -19,13 +19,13 @@ Here's an example of RDB in action logging an object:
     };
     ===== >8 CUT 8< =====
     
-    Listening on http://131.215.229.186:8080
-    131.215.220.166 20120118 09:41:34 Animation could not be found. Using slideleft.
-    131.215.220.166 20120118 09:41:47 Animation could not be found. Using slideleft.
-    131.215.220.166 20120118 09:44:55 Animation could not be found. Using slideleft.
-    131.215.220.166 20120118 09:44:56 Animation could not be found. Using slideleft.
-    131.215.220.166 20120118 09:45:00 Animation could not be found. Using slideleft.
-    131.215.220.166 20120118 09:45:04 {
+    Listening on http://192.168.1.1:8080
+    192.168.1.166 20120118 09:41:34 Animation could not be found. Using slideleft.
+    192.168.1.166 20120118 09:41:47 Animation could not be found. Using slideleft.
+    192.168.1.166 20120118 09:44:55 Animation could not be found. Using slideleft.
+    192.168.1.166 20120118 09:44:56 Animation could not be found. Using slideleft.
+    192.168.1.166 20120118 09:45:00 Animation could not be found. Using slideleft.
+    192.168.1.166 20120118 09:45:04 {
       "copper_patch_panels": [],
       "power_injectors": [],
       "modified_by": "ipaduser",
