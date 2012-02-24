@@ -52,15 +52,22 @@ if (hosts[argv.adapter]) {
 //	Output the script?
 if (argv.script) {
 	console.error("Script snippet:\n===== >8 CUT 8< =====\n".green + ("//	Override console.log for remote debugging with rdb.js\n\
-console.log = function (data) {\n\
+function rdb_console (data) {\n\
+  var args = Array.prototype.slice.call(arguments, 0);\n\
   var message = {};\n\
-  if (typeof(data) === 'object') {\n\
+  if (args.length > 1) {\n\
+    message.data = JSON.stringify(args);\n\
+  } else if ((args.length == 1) && (typeof(data) === 'object')) {\n\
     message.data = JSON.stringify(data);\n\
   } else {\n\
     message.text = data;\n\
   }\n\
   $.post('http://" + host_ip + ":" + argv.port + "/log', message);\n\
-};\n").white.bold + "===== >8 CUT 8< =====\n".green);
+};\n\
+console.log = rdb_console;\n\
+console.info = rdb_console;\n\
+console.debug = rdb_console;\n\
+console.error = rdb_console;\n").white.bold + "===== >8 CUT 8< =====\n".green);
 }
 	
 http.createServer(function (req, res) {
