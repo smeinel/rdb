@@ -1,6 +1,6 @@
 RDB: Remote DeBugger
 =====
-RDB is a tool intended for remotely debugging web apps. It's very useful in the case of a device that doesn't have good logging support, or in cases where you'd want to get debug info from another user's usage of our web apps.
+RDB is a tool intended for remotely debugging web apps. It's very useful in the case of a device that doesn't have good logging support, or in cases where you'd want to get debug info from another user's usage of your web apps.
 
 Here's an example of RDB in action logging an object:
 
@@ -69,19 +69,25 @@ Basic Usage
 To listen on localhost, port 8080, all you'd have to invoke is:
 `node rdb.js`
 
-Invoking `node rdb.js -s` will output a snippet to paste into your web page's JavaScript in order to route console.log calls to RDB.
+Invoking `node rdb.js -s` will output a snippet to paste into your web page's JavaScript in order to route console.log, console.info, console.debug, and console.error calls to RDB.
 
-    //	Override console.log for remote debugging with rdb.js
-    console.log = function (data) {
+    //    Override console.log for remote debugging with rdb.js
+    function rdb_console (data) {
+      var args = Array.prototype.slice.call(arguments, 0);
       var message = {};
-      if (typeof(data) === 'object') {
+      if (args.length > 1) {
+        message.data = JSON.stringify(args);
+      } else if ((args.length == 1) && (typeof(data) === 'object')) {
         message.data = JSON.stringify(data);
       } else {
         message.text = data;
       }
       $.post('http://127.0.0.1:8080/log', message);
     };
-
+    console.log = rdb_console;
+    console.info = rdb_console;
+    console.debug = rdb_console;
+    console.error = rdb_console;
 
 The snippet will be customized depending on what port and adapter you specified when calling the app.
 
