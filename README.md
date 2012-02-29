@@ -7,18 +7,24 @@ Here's an example of RDB in action logging an object:
     $ node rdb.js -a eth0 -s
     Script snippet:
     ===== >8 CUT 8< =====
-    //	Override console.log for remote debugging with rdb.js
-    console.log = function (data) {
+    //    Override console.log for remote debugging with rdb.js
+    function rdb_console (data) {
+      var args = Array.prototype.slice.call(arguments, 0);
       var message = {};
-      if (typeof(data) === 'object') {
+      if (args.length > 1) {
+        message.data = JSON.stringify(args);
+      } else if ((args.length == 1) && (typeof(data) === 'object')) {
         message.data = JSON.stringify(data);
       } else {
         message.text = data;
       }
       $.post('http://192.168.1.1:8080/log', message);
     };
-    ===== >8 CUT 8< =====
-    
+    console.log = rdb_console;
+    console.info = rdb_console;
+    console.debug = rdb_console;
+    console.error = rdb_console;
+    ===== >8 CUT 8< =====    
     Listening on http://192.168.1.1:8080
     192.168.1.166 20120118 09:41:34 Animation could not be found. Using slideleft.
     192.168.1.166 20120118 09:41:47 Animation could not be found. Using slideleft.
@@ -63,7 +69,7 @@ Basic Usage
 To listen on localhost, port 8080, all you'd have to invoke is:
 `node rdb.js`
 
-Invoking `node rdb.js -s` will output a snippet to paste into your web page's !JavaScript in order to route console.log calls to RDB.
+Invoking `node rdb.js -s` will output a snippet to paste into your web page's JavaScript in order to route console.log calls to RDB.
 
     //	Override console.log for remote debugging with rdb.js
     console.log = function (data) {
