@@ -52,13 +52,13 @@ if (hosts[argv.adapter]) {
 //	Output the script?
 if (argv.script) {
 	console.error("Script snippet:\n===== >8 CUT 8< =====\n".green + ("//	Override console.log for remote debugging with rdb.js\n\
-function post(url, data) {
-  var httpRequest = new XMLHttpRequest();
-  
-  httpRequest.open('POST', url);
-  httpRequest.send(JSON.stringify(data));
-}
-
+function post(url, data) {\n\
+  var httpRequest = new XMLHttpRequest();\n\
+  \n\
+  httpRequest.open('POST', url);\n\
+  httpRequest.send(JSON.stringify(data));\n\
+}\n\
+\n\
 function rdb_console (data) {\n\
   var args = Array.prototype.slice.call(arguments, 0);\n\
   var message = {};\n\
