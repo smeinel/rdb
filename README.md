@@ -8,6 +8,13 @@ Here's an example of RDB in action logging an object:
     Script snippet:
     ===== >8 CUT 8< =====
     //    Override console.log for remote debugging with rdb.js
+    function post(url, data) {
+      var httpRequest = new XMLHttpRequest();
+      
+      httpRequest.open('POST', url);
+      httpRequest.send(JSON.stringify(data));
+    }
+
     function rdb_console (data) {
       var args = Array.prototype.slice.call(arguments, 0);
       var message = {};
@@ -18,7 +25,7 @@ Here's an example of RDB in action logging an object:
       } else {
         message.text = data;
       }
-      $.post('http://192.168.1.1:8080/log', message);
+      post('http://192.168.1.1:8080/log', message);
     };
     console.log = rdb_console;
     console.info = rdb_console;
@@ -72,6 +79,13 @@ To listen on localhost, port 8080, all you'd have to invoke is:
 Invoking `node rdb.js -s` will output a snippet to paste into your web page's JavaScript in order to route console.log, console.info, console.debug, and console.error calls to RDB.
 
     //    Override console.log for remote debugging with rdb.js
+    function post(url, data) {
+      var httpRequest = new XMLHttpRequest();
+      
+      httpRequest.open('POST', url);
+      httpRequest.send(JSON.stringify(data));
+    }
+
     function rdb_console (data) {
       var args = Array.prototype.slice.call(arguments, 0);
       var message = {};
@@ -82,7 +96,7 @@ Invoking `node rdb.js -s` will output a snippet to paste into your web page's Ja
       } else {
         message.text = data;
       }
-      $.post('http://127.0.0.1:8080/log', message);
+      post('http://127.0.0.1:8080/log', message);
     };
     console.log = rdb_console;
     console.info = rdb_console;
