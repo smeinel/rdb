@@ -97,7 +97,7 @@ RDB follows standard Node.js & NPM standards for managing dependencies. Once you
 
     git clone git@github.com:smeinel/rdb.git
     cd rdb
-    npm link
+    npm install
 
 
 That's it. Now you're ready to run RDB.
