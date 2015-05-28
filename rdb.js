@@ -52,6 +52,13 @@ if (hosts[argv.adapter]) {
 //	Output the script?
 if (argv.script) {
 	console.error("Script snippet:\n===== >8 CUT 8< =====\n".green + ("//	Override console.log for remote debugging with rdb.js\n\
+function post(url, data) {
+  var httpRequest = new XMLHttpRequest();
+  
+  httpRequest.open('POST', url);
+  httpRequest.send(JSON.stringify(data));
+}
+
 function rdb_console (data) {\n\
   var args = Array.prototype.slice.call(arguments, 0);\n\
   var message = {};\n\
@@ -62,7 +69,7 @@ function rdb_console (data) {\n\
   } else {\n\
     message.text = data;\n\
   }\n\
-  $.post('http://" + host_ip + ":" + argv.port + "/log', message);\n\
+  post('http://" + host_ip + ":" + argv.port + "/log', message);\n\
 };\n\
 console.log = rdb_console;\n\
 console.info = rdb_console;\n\
@@ -87,11 +94,11 @@ http.createServer(function (req, res) {
 			data.push(chunk);
 		});
 		req.on('end', function () {
-			var fixedData = querystring.parse(data.join(""));
+			var fixedData = JSON.parse(data.join(""));
 			if (fixedData['data']) {
-				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + JSON.stringify(JSON.parse(fixedData['data']), null, "  ").message);
+				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + fixedData.uuid + " (" + fixedData.now + ") " + JSON.stringify(JSON.parse(fixedData['data']), null, "  ").message);
 			} else {
-				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + fixedData.text.message);
+				console.log((req.connection.remoteAddress + " ").uri + timestamp().timestamp + " " + fixedData.uuid + " (" + fixedData.now + ") " + fixedData.text.message);
 			}
 		});
 		res.writeHead(200, {
