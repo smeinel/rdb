@@ -1,14 +1,14 @@
 {
-    "name": "rdb",
-    "description": "Remote DeBugger",
-    "author": "Steve Meinel <steve.meinel@caltech.edu>",
-    "contributors": [
-	],
-    "dependencies": {
-        "colors": "0.6.0-1",
-        "dateformat": "1.0.2-1.2.3",
-        "optimist": "0.3.1"
-    },
-    "version": "1.1.0"
+  "name": "rdb",
+  "description": "Remote DeBugger",
+  "author": "Steve Meinel <steve.meinel@caltech.edu>",
+  "contributors": [],
+  "dependencies": {
+    "colors": "0.6.0-1",
+    "dateformat": "1.0.2-1.2.3",
+    "optimist": "0.3.1",
+    "q": "^1.4.1",
+    "sqlite3": "^3.1.0"
+  },
+  "version": "1.1.0"
 }
-
