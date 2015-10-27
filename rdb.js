@@ -110,6 +110,26 @@ function createDB() {
   });
 }
 
+function createTable() {
+  return Q.Promise(function(resolve, reject) { // eslint-disable-line new-cap
+    var query = 'CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY, timestamp TEXT, address TEXT, '
+      + 'uuid TEXT, now INTEGER, data TEXT);';
+
+    database.run(query, function(err) {
+      if (err) {
+        reject(new Error(err));
+      }
+      resolve(true);
+    });
+  });
+}
+
+function writeRow(timestamp, address, uuid, now, data) {
+  var statement = database.prepare('INSERT INTO messages VALUES (NULL, ?, ?, ?, ?, ?);');
+
+  statement.run(timestamp, address, uuid, now, data);
+}
+
 function startServer() {
   http.createServer(function(req, res) {
     var urlParts = url.parse(req.url, true);
@@ -128,16 +148,20 @@ function startServer() {
       });
       req.on('end', function() {
         var fixedData = JSON.parse(data.join(''));
+        var now = fixedData.now;
+        var time = timestamp().timestamp;
+        var uuid = fixedData.uuid;
 
-        if (fixedData['data']) {
+        if (fixedData.data) {
+          writeRow(time, req.connection.remoteAddress, uuid, now, JSON.stringify(JSON.parse(fixedData.data)));
           console.log(
-            (req.connection.remoteAddress + ' ').uri + timestamp().timestamp + ' ' + fixedData.uuid + ' (' +
-              fixedData.now + ') ' + JSON.stringify(JSON.parse(fixedData['data']), null, '  ').message
+            (req.connection.remoteAddress + ' ').uri + time + ' ' + uuid + ' (' +
+              now + ') ' + JSON.stringify(JSON.parse(fixedData.data), null, '  ').message
           );
         } else {
+          writeRow(time, req.connection.remoteAddress, uuid, now, fixedData.text.message);
           console.log(
-            (req.connection.remoteAddress + ' ').uri + timestamp().timestamp + ' ' + fixedData.uuid + ' (' +
-              fixedData.now + ') ' + fixedData.text.message
+            (req.connection.remoteAddress + ' ').uri + time + ' ' + uuid + ' (' + now + ') ' + fixedData.text.message
           );
         }
       });
@@ -172,6 +196,7 @@ checkHelp()
   .then(getInterface)
   .then(showScript)
   .then(createDB)
+  .then(createTable)
   .then(startServer)
   .catch(function(err) {
     console.error('ERROR: ' + err);
